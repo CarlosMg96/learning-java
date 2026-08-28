@@ -1,0 +1,97 @@
+### Variables de entorno
+@baseUrl = http://localhost:8080/api/v1/vehicles
+
+### 1. Comprobar salud de la API (Actuator)
+GET http://localhost:8080/actuator/health
+Accept: application/json
+
+###
+
+### 2. Crear un nuevo vehículo (Éxito - 201 Created)
+# @name createVehicle
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "licensePlate": "FLEET-001",
+  "brand": "Toyota",
+  "model": "Hilux 4x4",
+  "year": 2024,
+  "status": "AVAILABLE"
+}
+
+###
+
+### 3. Crear vehículo con placa duplicada (Error esperado - 409 Conflict)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "licensePlate": "FLEET-001",
+  "brand": "Toyota",
+  "model": "Hilux",
+  "year": 2024,
+  "status": "AVAILABLE"
+}
+
+###
+
+### 4. Crear vehículo con datos inválidos (Error esperado - 400 Bad Request)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "licensePlate": "",
+  "brand": "",
+  "model": "",
+  "year": 1800,
+  "status": null
+}
+
+###
+
+### 5. Listar todos los vehículos
+GET {{baseUrl}}
+Accept: application/json
+
+###
+
+### 6. Filtrar vehículos por estado
+GET {{baseUrl}}?status=AVAILABLE
+Accept: application/json
+
+###
+
+### 7. Filtrar vehículos por marca
+GET {{baseUrl}}?brand=Toyota
+Accept: application/json
+
+###
+
+### 8. Obtener vehículo por ID
+GET {{baseUrl}}/1
+Accept: application/json
+
+###
+
+### 9. Obtener vehículo por Placa
+GET {{baseUrl}}/plate/FLEET-001
+Accept: application/json
+
+###
+
+### 10. Actualizar un vehículo
+PUT {{baseUrl}}/1
+Content-Type: application/json
+
+{
+  "brand": "Toyota",
+  "model": "Hilux GR Sport",
+  "year": 2024,
+  "status": "IN_USE"
+}
+
+###
+
+### 11. Eliminar un vehículo
+DELETE {{baseUrl}}/1
