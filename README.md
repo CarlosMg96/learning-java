@@ -1,27 +1,33 @@
-# FleetHub API (Todo-en-Uno) 🚗💨
+# FleetHub API 🚗💨
 
-API REST profesional desarrollada con **Spring Boot 3 (Java 21)**, **Spring Data JPA**, **PostgreSQL**, **Bean Validation**, **Actuator**, soporte para **AWS Lambda (Serverless)** y contenedorizada en **un único contenedor Todo-en-Uno (All-in-One)** con Docker.
+API REST profesional desarrollada con **Spring Boot 3 (Java 21)**, **Spring Data JPA**, **PostgreSQL 16**, **Bean Validation**, **Actuator**, soporte para **AWS Lambda (Serverless)** y arquitectura de contenedores con **Docker Compose**.
 
 ---
 
-## 🚀 Cómo ejecutar (Un solo contenedor con Java 21 + PostgreSQL)
+## 🏗️ Arquitectura de Contenedores
 
-El proyecto incluye una imagen Docker Todo-en-Uno que contiene tanto el runtime de **Java 21** para la API como el servidor **PostgreSQL** interno y persistente en el mismo contenedor.
+Siguiendo las mejores prácticas de la industria, la aplicación está desacoplada en 2 servicios comunicados internamente:
 
-### Levantar el contenedor único:
+1. **`fleethub_postgres`**: Contenedor con la imagen oficial `postgres:16-alpine` (puerto `5432`).
+2. **`fleethub_api`**: Contenedor con la compilación y ejecución de tu API Spring Boot en **Java 21** (`Dockerfile` multi-etapa, puerto `8080`).
+
+---
+
+## 🚀 Cómo ejecutar con Docker
+
 ```bash
 docker compose up --build -d
 ```
 
-### Ver logs en tiempo real:
+### Comandos útiles:
 ```bash
-docker logs -f fleethub_all_in_one
-```
+# Ver logs en tiempo real de la API
+docker logs -f fleethub_api
 
-### Detener el contenedor:
-```bash
+# Detener los servicios
 docker compose down
-# O para borrar también los datos de la base de datos:
+
+# Detener y limpiar los datos de PostgreSQL
 docker compose down -v
 ```
 
