@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: FleetHub API - Serverless Spring Boot API on AWS Lambda
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 1024
+
+Resources:
+  FleetHubApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: com.fleethub.api.lambda.StreamLambdaHandler::handleRequest
+      Runtime: java21
+      CodeUri: fleethub-api/
+      AutoPublishAlias: live
+      Environment:
+        Variables:
+          SPRING_PROFILES_ACTIVE: aws
+          # Configura estas variables en AWS SSM o Secrets Manager para apuntar a tu AWS RDS PostgreSQL
+          SPRING_DATASOURCE_URL: jdbc:postgresql://your-rds-endpoint:5432/fleethub
+          SPRING_DATASOURCE_USERNAME: db_user
+          SPRING_DATASOURCE_PASSWORD: db_password
+      Events:
+        HttpApiProxy:
+          Type: HttpApi
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+        RootPath:
+          Type: HttpApi
+          Properties:
+            Path: /
+            Method: ANY
+
+Outputs:
+  FleetHubApiUrl:
+    Description: URL pública del API Gateway
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com"

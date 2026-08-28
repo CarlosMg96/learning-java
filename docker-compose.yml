@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # Base de datos PostgreSQL
+  postgres_db:
+    image: postgres:16-alpine
+    container_name: fleethub_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: fleethub
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d fleethub"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fleethub_network
+
+  # Aplicación Spring Boot API
+  fleethub_api:
+    build:
+      context: ./fleethub-api
+      dockerfile: Dockerfile
+    container_name: fleethub_api
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_db:5432/fleethub
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      PORT: 8080
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+    networks:
+      - fleethub_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  fleethub_network:
+    driver: bridge
